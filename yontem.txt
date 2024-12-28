@@ -1,0 +1,48 @@
+Sistem, beş ana bileşenden oluşmaktadır:
+Doğal Dil İşleme Modülü (NLP): Müşterilerden gelen metin ve sesli iletişim verilerini anlamlandırmak için doğal dil işleme teknikleri kullanılacaktır. Bu modül, müşteri mesajlarının dilini tanıma, bağlam analizi ve anlam çıkarımı gibi işlemleri gerçekleştirir.
+Duygu Analizi Modülü: Müşteri mesajlarının duygusal tonunu belirlemek için önceden eğitilmiş Sentiment140 veri seti kullanılacaktır. Bu analiz, müşterinin yaşadığı deneyime uygun yanıtların verilmesini sağlar.
+Bağlam Tabanlı Yanıt Üretim Modülü: Transformer tabanlı T5 modeli, müşteri taleplerine bağlama uygun yanıtlar oluşturmak için eğitilecektir. Bu modül, yanıtların doğruluğu ve doğallığını artırır.
+Backend İşleme Modülü: Hızlı ve ölçeklenebilir bir hizmet sağlamak için FastAPI kullanılarak geliştirilmiştir. Backend, kullanıcıdan gelen istekleri işler, gerekli modüllere yönlendirir ve yanıtları frontend'e iletir.
+Kullanıcı Arayüzü Modülü (Frontend): Streamlit kütüphanesi ile geliştirilen kullanıcı dostu bir arayüz, hem yazılı hem de sesli iletişim kanalları üzerinden etkileşim sağlar.
+2.2 Kullanılan Teknolojiler
+Dialogflow: Doğal dil işleme ve bağlam algılama için Dialogflow kullanılır. Bu araç, kullanıcı isteklerini tanımlamak için intent (niyet) ve entity (varlık) modelleri oluşturur.
+Örnek: “Siparişimi iptal etmek istiyorum” gibi ifadeler, Sipariş İşlemleri başlığında bir intent olarak tanımlanır.
+
+Hugging Face T5: T5 (Text-to-Text Transfer Transformer) modeli, hem müşteri sorunlarını anlamak hem de bağlama uygun yanıtlar üretmek için kullanılır. Bu model, metinleri "input-output" formatında işleyerek tüm görevleri aynı çerçevede ele alır.
+Örnek Görev: Girdi: "Kargomun durumu nedir?" Çıktı: "Kargonuz şu anda teslimat için yola çıktı."
+Sentiment140: Duygu analizi için kullanılan bu veri seti, Twitter mesajları üzerinden etiketlenmiş veriler içerir. Pozitif, negatif veya nötr duyguları sınıflandırmada kullanılır.
+Veri Ön İşleme: Veriler öncelikle temizlenir (emoji, URL, mention kaldırma). Ardından, modelin dil anlayışına uygun hale getirilir.
+FastAPI: Hızlı ve modern bir backend framework olarak, tüm API isteklerini yönetir.
+Örnek: API’ye gelen bir istek, /analyze-sentiment endpoint'ine yönlendirilir. API, duygu analizi yaparak sonucu döner.
+Streamlit: Frontend geliştirme sürecinde, kullanıcıların kolaylıkla sistemle etkileşim kurmasını sağlayan, Python tabanlı bir kütüphane.
+Özellikler: Gerçek zamanlı grafikler, metin kutuları, düğmeler.
+2.3 Geliştirme Süreci
+2.3.1 Veri Toplama ve Ön İşleme
+Dialogflow Eğitimi için Veri Hazırlığı: Kullanıcı mesajlarının örnekleri toplanır (örneğin: "Kargom nerede?", "İade işlemini nasıl yapabilirim?"). Bu mesajlar, niyet ve varlık türlerine göre etiketlenir.
+Örnek: İstek: “Siparişimin durumunu öğrenebilir miyim?” Intent: "Sipariş Durumu" Entity: "Sipariş"
+T5 Modeli için Eğitim Verisi: Sisteme bağlam tabanlı yanıt üretimini öğretmek için yüksek kaliteli soru-cevap çiftleri hazırlanır.
+Örnek: Girdi: “Ürünüm hasarlı geldi, ne yapmalıyım?” Çıktı: “Hasarlı ürünler için lütfen bu formu doldurun: [link]”
+
+2.3.2 Model Eğitimi
+T5 modeli, Hugging Face platformunda önceden eğitilmiş bir versiyon üzerinden ince ayar yapılır. Eğitimi hızlandırmak için GPU/TPU kullanılır.
+2.3.3 Sistem Entegrasyonu
+Dialogflow, backend ile entegre edilerek tüm müşteri talepleri doğru modüllere yönlendirilir. Duygu analizi ve bağlam tabanlı yanıt üretim süreçleri, entegre API üzerinden hızlı yanıt sağlar.
+2.3.4 Gerçek Zamanlı Öğrenme
+Sistem, yeni müşteri mesajlarından sürekli olarak öğrenir ve bilgi tabanını günceller.
+Örneğin, “Siparişimi iptal etmek istiyorum” şeklindeki yeni bir ifade tanımlandığında, sistem bu ifadeyi öğrenerek sonraki işlemler için hazır hale gelir.
+2.4 T5 Modelinin Detayları
+Model Özellikleri: T5, tamamen transformer mimarisine dayalı bir modeldir. Her görevi bir metin çevirme problemi olarak ele alır. Girdi ve çıktı, doğal dil formatında ifade edilir.
+Eğitim Stratejisi: Veri Seti: Müşteri destek sistemleri için özelleştirilmiş metin verileri kullanılır.
+Kaybı Fonksiyonu: Doğruluk odaklı bir Cross-Entropy Loss fonksiyonu kullanılır.
+Optimizasyon: AdamW optimizer ve 3e-4 başlangıç öğrenme oranı.
+Yanıt Üretimi Süreci: Girdi: “Kargom neden gecikti?” Model, bağlamı analiz ederek uygun bir yanıt üretir: “Hava koşulları nedeniyle gecikme yaşanmıştır. Anlayışınız için teşekkür ederiz.”
+Performans Metriği:
+BLEU Skoru: Üretilen yanıtların doğruluğunu ölçmek için kullanılır.
+ROUGE Skoru: Modelin metinsel kapsamını ve doğruluğunu değerlendirir.
+2.5 Performans Ölçüm Metrikleri
+Sistemin başarımını değerlendirmek için aşağıdaki metrikler kullanılacaktır:
+Yanıt Süresi: Kullanıcı isteği ile yanıt üretimi arasındaki süre.
+Doğruluk: Yanıtların müşteri taleplerine uygunluğu.
+Müşteri Memnuniyeti: Kullanıcıların sistemle olan deneyimlerini ölçmek için anketler yapılır.
+Model Verimliliği: GPU/CPU üzerinde yanıt üretme hızları.
+Bu yöntemler ile sistemin verimliliği optimize edilecek ve müşteri memnuniyetini artıran etkili bir çözüm sunulacaktır.
