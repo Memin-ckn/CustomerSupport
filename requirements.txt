@@ -1,0 +1,12 @@
+transformers
+fastapi
+uvicorn
+dialogflow
+pandas
+scikit-learn
+torch
+sentencepiece
+streamlit
+SpeechRecognition
+gTTS
+playsound
