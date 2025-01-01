@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 
 # Load the preprocessed data
-data = pd.read_csv('data\\training_turkish_2.csv')
+data = pd.read_csv('data\\processed_training_turkish_2.csv')
 
 # Define a custom dataset class
 class CustomDataset(Dataset):
