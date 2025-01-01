@@ -9,4 +9,6 @@ sentencepiece
 streamlit
 SpeechRecognition
 gTTS
-playsound
+playsound3
+accelerate
+charset

@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 
 # Load the preprocessed data
-data = pd.read_csv('data\\processed_training_turkish_2.csv')
+data = pd.read_csv('data/processed_training_turkish_first5k.csv')
 
 # Define a custom dataset class
 class CustomDataset(Dataset):
@@ -18,8 +18,9 @@ class CustomDataset(Dataset):
     def __getitem__(self, idx):
         instruction = self.data.iloc[idx]['instruction_turkish']
         response = self.data.iloc[idx]['response_turkish']
-        inputs = self.tokenizer(instruction, return_tensors='pt', padding=True, truncation=True)
-        labels = self.tokenizer(response, return_tensors='pt', padding=True, truncation=True).input_ids
+        inputs = self.tokenizer(instruction, return_tensors='pt', padding='max_length', truncation=True, max_length=512)
+        labels = self.tokenizer(response, return_tensors='pt', padding='max_length', truncation=True, max_length=512).input_ids
+        labels[labels == self.tokenizer.pad_token_id] = -100  # Replace padding token id's in labels by -100
         return {"input_ids": inputs.input_ids.flatten(), "labels": labels.flatten()}
 
 # Initialize the dataset and dataloader
@@ -36,6 +37,8 @@ training_args = TrainingArguments(
     per_device_train_batch_size=8,
     save_steps=10_000,
     save_total_limit=2,
+    logging_dir='./logs',
+    logging_steps=500, 
 )
 
 # Initialize the Trainer
