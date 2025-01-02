@@ -11,4 +11,3 @@ SpeechRecognition
 gTTS
 playsound3
 accelerate
-charset

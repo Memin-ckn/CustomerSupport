@@ -1,6 +1,7 @@
 from transformers import T5Tokenizer, T5ForConditionalGeneration, Trainer, TrainingArguments
 import pandas as pd
 import torch
+import os
 from torch.utils.data import Dataset, DataLoader
 
 # Load the preprocessed data
@@ -29,6 +30,7 @@ dataloader = DataLoader(dataset, batch_size=8, shuffle=True)
 
 # Initialize the model
 model = T5ForConditionalGeneration.from_pretrained('t5-small')
+tokenizer = T5Tokenizer.from_pretrained('t5-small')
 
 # Define training arguments
 training_args = TrainingArguments(
@@ -49,4 +51,17 @@ trainer = Trainer(
 )
 
 # Train the model
-trainer.train()
+#trainer.train()
+
+# Path to the directory where the model will be saved
+save_directory = './results/checkpoint-1875'
+
+# Create the directory if it doesn't exist
+if not os.path.exists(save_directory):
+    os.makedirs(save_directory)
+
+# Save the trained T5 model and tokenizer
+model.save_pretrained(save_directory)
+tokenizer.save_pretrained(save_directory)
+
+print(f"Model and tokenizer saved to {save_directory}")

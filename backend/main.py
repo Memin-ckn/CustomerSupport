@@ -8,14 +8,16 @@ app = FastAPI()
 class Message(BaseModel):
     text: str
 
-# Load trained T5 model and tokenizer
-model = T5ForConditionalGeneration.from_pretrained('./results')
-tokenizer = T5Tokenizer.from_pretrained('t5-small')
+# Load trained T5 model and tokenizer from the correct checkpoint path
+model_path = '\\results\\checkpoint-1875'
+model = T5ForConditionalGeneration.from_pretrained(model_path)
+tokenizer = T5Tokenizer.from_pretrained(model_path)
 
 @app.post("/chat")
 def chat(message: Message):
     try:
-        input_text = f"chat: {message.text}"
+        # Encode the input text
+        input_text = message.text
         input_ids = tokenizer.encode(input_text, return_tensors="pt")
 
         # Generate response using T5
@@ -25,3 +27,7 @@ def chat(message: Message):
         return {"response": response_text}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+        
+        36142758
+
+
