@@ -9,7 +9,7 @@ class Message(BaseModel):
     text: str
 
 # Load trained T5 model and tokenizer from the correct checkpoint path
-model_path = '\\results\\checkpoint-1875'
+model_path = 'results'
 model = T5ForConditionalGeneration.from_pretrained(model_path)
 tokenizer = T5Tokenizer.from_pretrained(model_path)
 
@@ -28,6 +28,6 @@ def chat(message: Message):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
         
-        36142758
+        
 
 

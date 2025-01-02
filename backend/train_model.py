@@ -54,7 +54,7 @@ trainer = Trainer(
 #trainer.train()
 
 # Path to the directory where the model will be saved
-save_directory = './results/checkpoint-1875'
+save_directory = './results'
 
 # Create the directory if it doesn't exist
 if not os.path.exists(save_directory):

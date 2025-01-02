@@ -24,7 +24,7 @@ for user, bot in st.session_state.chat_history:
 user_message = st.text_input("Type your message here:")
 
 # Process text input
-if user_message:
+if user_message and st.button("Send"):
     try:
         response = requests.post(BACKEND_URL, json={"text": user_message})
         response_data = response.json()
@@ -32,9 +32,11 @@ if user_message:
 
         # Add to chat history
         st.session_state.chat_history.append((user_message, bot_response))
-        st.experimental_rerun()
+
+        # Clear the input box after sending
+        st.set_query_params()
     except Exception as e:
-        st.error("Error communicating with the backend!")
+        st.error(f"Error communicating with the backend: {e}")
 
 # Speech input
 if st.button("Speak"):
@@ -53,11 +55,15 @@ if st.button("Speak"):
 
             # Add to chat history
             st.session_state.chat_history.append((user_message, bot_response))
-            st.experimental_rerun()
+
+            # Clear the input box after sending
+            st.set_query_params()
         except sr.UnknownValueError:
             st.error("Sorry, I could not understand your speech.")
         except sr.RequestError:
             st.error("Speech recognition service is unavailable.")
+        except Exception as e:
+            st.error(f"Error communicating with the backend: {e}")
 
 # Text-to-speech output
 if st.session_state.chat_history:
