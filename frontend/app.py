@@ -23,20 +23,20 @@ for user, bot in st.session_state.chat_history:
 # Text input
 user_message = st.text_input("Type your message here:")
 
-# Process text input
-if user_message and st.button("Send"):
-    try:
-        response = requests.post(BACKEND_URL, json={"text": user_message})
-        response_data = response.json()
-        bot_response = response_data["response"]
+if st.button("Send"):
+    if user_message:
+        try:
+            response = requests.post(BACKEND_URL, json={"text": user_message})
+            response_data = response.json()
+            bot_response = response_data["response"]
 
-        # Add to chat history
-        st.session_state.chat_history.append((user_message, bot_response))
+            # Add to chat history
+            st.session_state.chat_history.append((user_message, bot_response))
 
-        # Clear the input box after sending
-        st.set_query_params()
-    except Exception as e:
-        st.error(f"Error communicating with the backend: {e}")
+            # Clear the input box after sending
+            st.session_state.user_message = ""
+        except Exception as e:
+            st.error(f"Error communicating with the backend: {e}")
 
 # Speech input
 if st.button("Speak"):
@@ -57,7 +57,7 @@ if st.button("Speak"):
             st.session_state.chat_history.append((user_message, bot_response))
 
             # Clear the input box after sending
-            st.set_query_params()
+            st.session_state.user_message = ""
         except sr.UnknownValueError:
             st.error("Sorry, I could not understand your speech.")
         except sr.RequestError:
@@ -69,7 +69,7 @@ if st.button("Speak"):
 if st.session_state.chat_history:
     latest_bot_response = st.session_state.chat_history[-1][1]
     if st.button("Listen"):
-        tts = gTTS(text=latest_bot_response, lang="en")
+        tts = gTTS(text=latest_bot_response, lang="tr")
         tts.save("response.mp3")
         playsound("response.mp3")
         os.remove("response.mp3")
