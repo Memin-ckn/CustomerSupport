@@ -26,7 +26,11 @@ user_message = st.text_input("Type your message here:")
 if st.button("Send"):
     if user_message:
         try:
-            response = requests.post(BACKEND_URL, json={"text": user_message})
+            # Prepare the conversation history
+            conversation_history = "\n".join([f"User: {user}\nBot: {bot}" for user, bot in st.session_state.chat_history])
+            input_text = f"{conversation_history}\nUser: {user_message}\nBot:"
+
+            response = requests.post(BACKEND_URL, json={"text": input_text})
             response_data = response.json()
             bot_response = response_data["response"]
 
@@ -68,8 +72,11 @@ if st.button("Speak"):
 # Text-to-speech output
 if st.session_state.chat_history:
     latest_bot_response = st.session_state.chat_history[-1][1]
-    if st.button("Listen"):
-        tts = gTTS(text=latest_bot_response, lang="tr")
-        tts.save("response.mp3")
-        playsound("response.mp3")
-        os.remove("response.mp3")
+    if st.button("Dinle"):
+        try:
+            tts = gTTS(text=latest_bot_response, lang="tr")
+            tts.save("response.mp3")
+            playsound("response.mp3")
+            os.remove("response.mp3")
+        except Exception as e:
+            st.error(f"Ses dönüşümünde hata: {e}")

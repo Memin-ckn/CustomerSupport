@@ -11,3 +11,4 @@ SpeechRecognition
 gTTS
 playsound3
 accelerate
+datasets
