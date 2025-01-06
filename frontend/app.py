@@ -27,11 +27,21 @@ user_message = st.text_input("Type your message here:")
 if st.button("Send"):
     if user_message:
         try:
-            # Prepare the conversation history
-            conversation_history = "\n".join([f"User: {user}\nBot: {bot}" for user, bot in st.session_state.chat_history])
-            input_text = f"{conversation_history}\nUser: {user_message}\nBot:"
-
-            response = requests.post(BACKEND_URL, json={"text": input_text})
+            # Prepare the conversation history in the format expected by the backend
+            conversation_history = []
+            for user, bot in st.session_state.chat_history:
+                conversation_history.extend([
+                    {"role": "user", "content": user},
+                    {"role": "assistant", "content": bot}
+                ])
+            
+            # Add current user message
+            conversation_history.append({"role": "user", "content": user_message})
+            
+            response = requests.post(BACKEND_URL, json={
+                "text": user_message,
+                "conversation_history": conversation_history
+            })
             response_data = response.json()
             bot_response = response_data["response"]
 

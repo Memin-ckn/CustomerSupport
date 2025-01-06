@@ -64,3 +64,30 @@ def generate_response(input_text: str, conversation_history: List[dict]) -> str:
     
     # Clean up the response if it starts with "assistant:" or similar
     response_text = response_text.split(":", 1)[-1].strip()
+
+@app.post("/chat")
+async def chat(message: Message):
+    conversation_id = message.conversation_id or str(uuid.uuid4())
+    
+    if conversation_id not in conversations:
+        conversations[conversation_id] = Conversation(messages=[])
+    
+    # Add the new message to the conversation
+    conversations[conversation_id].messages.append({
+        "role": "user",
+        "content": message.text
+    })
+    
+    # Generate response using the conversation history
+    response = generate_response(
+        message.text,
+        conversations[conversation_id].messages
+    )
+    
+    # Add the response to the conversation history
+    conversations[conversation_id].messages.append({
+        "role": "assistant",
+        "content": response
+    })
+    
+    return {"response": response, "conversation_id": conversation_id}
