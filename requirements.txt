@@ -12,4 +12,7 @@ gTTS
 playsound3
 accelerate
 datasets
-assemblyai
+pyaudio
+openai-whisper
+sounddevice 
+scipy
