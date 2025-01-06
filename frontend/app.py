@@ -14,17 +14,17 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 # Title
-st.title("AI Chatbot with Text and Speech")
+st.title("Sesli ve Yazılı Müsteri Destek Asistanı")
 
 # Display chat history
 for user, bot in st.session_state.chat_history:
-    st.write(f"**You:** {user}")
-    st.write(f"**Bot:** {bot}")
+    st.write(f"**Siz:** {user}")
+    st.write(f"**Asistan:** {bot}")
 
 # Text input
-user_message = st.text_input("Type your message here:")
+user_message = st.text_input("Mesajınızı buraya yazınız:")
 
-if st.button("Send"):
+if st.button("Gönder"):
     if user_message:
         try:
             # Prepare the conversation history in the format expected by the backend
@@ -49,16 +49,17 @@ if st.button("Send"):
             st.session_state.chat_history.append((user_message, bot_response))
 
             # Clear the input box after sending
-            st.session_state.user_message = ""
+            user_message = ""  # Reset the local variable
+            st.session_state.user_message = ""  # Reset the session state variable
         except Exception as e:
             st.error(f"Error communicating with the backend: {e}")
 
 
-if st.button("Speak"):
-    st.write("Button pressed")  # Debug print 1
+if st.button("Konuş"):
+    st.write("Butona basılıd")  # Debug print 1
     
     model = whisper.load_model("base")
-    st.write("Model loaded")  # Debug print 2
+    st.write("Model yüklendi")  # Debug print 2
     
     try:
         import sounddevice as sd
@@ -66,28 +67,28 @@ if st.button("Speak"):
 
         fs = 16000
         seconds = 5
-        st.write("Starting recording...")  # Debug print 3
+        st.write("Kayıt başladı...")  # Debug print 3
         
         audio_data = sd.rec(int(seconds * fs), samplerate=fs, channels=1, dtype='int16')
         sd.wait()
-        st.write("Recording completed")  # Debug print 4
-        st.write(f"Audio data shape: {audio_data.shape}")  # Debug print 5
+        st.write("Kayıt tamamlandı")  # Debug print 4
+        st.write(f"Ses verisi sekli: {audio_data.shape}")  # Debug print 5
 
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio_file:
             temp_file_path = temp_audio_file.name
             write(temp_file_path, fs, audio_data)
-            st.write(f"Audio saved to: {temp_file_path}")  # Debug print 6
+            st.write(f"Ses buraya kaydedildi: {temp_file_path}")  # Debug print 6
 
-        st.write("Starting transcription...")  # Debug print 7
+        st.write("Metne çevriliyor...")  # Debug print 7
         result = model.transcribe(temp_file_path, language="tr")
-        st.write("Transcription completed")  # Debug print 8
-        st.write(f"Raw result: {result}")  # Debug print 9
+        st.write("Metne çevrildi")  # Debug print 8
+        st.write(f"Ham sonuç: {result}")  # Debug print 9
         
         user_message = result["text"]
-        st.write(f"Extracted text: {user_message}")  # Debug print 10
+        st.write(f"Çıkartılan metin: {user_message}")  # Debug print 10
 
         # Rest of your code...
-        st.success(f"You said: {user_message}")
+        st.success(f"Dediniz ki: {user_message}")
 
         response = requests.post(BACKEND_URL, json={"text": user_message})
         response_data = response.json()
@@ -99,11 +100,11 @@ if st.button("Speak"):
 
         # Corrected chat history display
         for user_msg, bot_msg in st.session_state.chat_history:
-            st.write(f"You: {user_msg}")
-            st.write(f"Bot: {bot_msg}")
+            st.write(f"Siz: {user_msg}")
+            st.write(f"Asistan: {bot_msg}")
 
     except Exception as e:
-        st.error(f"An error occurred: {e}")
+        st.error(f"Bir hata oluştu: {e}")
 
     finally:
         if 'temp_file_path' in locals() and os.path.exists(temp_file_path):
@@ -127,29 +128,28 @@ def test_audio():
     fs = 16000
     duration = 3  # seconds
     
-    st.write("Testing audio device...")
-    st.write(f"Available audio devices:")
+    st.write("Ses cihazı test ediliyor...")
+    st.write(f"Müsait ses cihazları:")
     st.write(sd.query_devices())
     
     try:
         recording = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype='int16')
         sd.wait()
-        st.write("Recording successful")
-        st.write(f"Recording shape: {recording.shape}")
-        st.write(f"Recording min/max values: {recording.min()}, {recording.max()}")
+        st.write("Kayıt başarılı")
+        st.write(f"Kayıt sekli: {recording.shape}")
+        st.write(f"Kayıt min/max değerleri: {recording.min()}, {recording.max()}")
         return True
     except Exception as e:
-        st.error(f"Recording failed: {e}")
+        st.error(f"Kayıt başarısız: {e}")
         return False
 
-if st.button("Test Audio"):
+if st.button("Sesi Test Et"):
     test_audio()
 
-if st.button("Test Whisper"):
+if st.button("Whisper Modelini Test Et"):
     try:
         model = whisper.load_model("base")
-        st.write("Whisper model loaded successfully")
-        st.write(f"Model device: {model.device}")
-        st.write(f"Model is multilingual: {model.is_multilingual}")
+        st.write("Whisper modeli başarıyla yüklendi")
+        st.write(f"Model cihazı: {model.device}")
     except Exception as e:
         st.error(f"Whisper model loading failed: {e}")
