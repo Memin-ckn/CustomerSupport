@@ -12,3 +12,4 @@ gTTS
 playsound3
 accelerate
 datasets
+pyaudio
